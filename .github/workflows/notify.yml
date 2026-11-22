@@ -1,0 +1,50 @@
+name: Telegram Notifier
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # هر ۱۵ دقیقه یک بار چک می‌کند
+  workflow_dispatch:          # اجرای دستی از تب Actions
+    inputs:
+      force_repo:
+        description: "نام یک پروژه برای انتشار دستی پست معرفی (اختیاری)"
+        required: false
+        default: ""
+      post_existing:
+        description: "پروژه‌های قدیمی را هم منتشر کن؟ (true/false)"
+        required: false
+        default: "true"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: telegram-notifier
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run bot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL: "@technokey1"
+          GITHUB_USER: "keyvan-alavi"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # releases = فقط وقتی Release جدید می‌سازید پست آپدیت بگذارد
+          # commits  = با هر کامیت جدید هم پست آپدیت بگذارد
+          UPDATE_MODE: "releases"
+          FORCE_REPO: ${{ github.event.inputs.force_repo }}
+          # اجرای اول: همه‌ی پروژه‌های قدیمی هم منتقل می‌شوند. بعد از آن فقط پروژه‌ها و ریلیزهای جدید.
+          POST_EXISTING: ${{ github.event.inputs.post_existing || 'true' }}
+        run: python bot.py
+
+      - name: Save state
+        if: always()
+        run: |
+          git config user.name "technokey-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add state.json
+          git diff --cached --quiet || (git commit -m "update state [skip ci]" && git push)
