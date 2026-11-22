@@ -1,0 +1,33 @@
+{
+  "initialized": true,
+  "repos": {
+    "AdvancedMusicPlayer": {
+      "release": null,
+      "sha": null
+    },
+    "DataAnalyzerApp": {
+      "release": null,
+      "sha": null
+    },
+    "DesktopMediaEditor": {
+      "release": "v0.4.1",
+      "sha": null
+    },
+    "Hodgsons_Algorithm": {
+      "release": "Hodgsons_Algorithm",
+      "sha": null
+    },
+    "ImageAndVideoEnhancerTelegramBot": {
+      "release": null,
+      "sha": null
+    },
+    "MapViewer": {
+      "release": null,
+      "sha": null
+    },
+    "TaskbarFolders": {
+      "release": "v1.4.0",
+      "sha": null
+    }
+  }
+}
